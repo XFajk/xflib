@@ -1,6 +1,6 @@
 import pygame
 import math
-from src.effects.effects import surf_circle, surf_rect
+from .effects import surf_circle, surf_rect
 
 
 class ShapeParticles:
