@@ -1,6 +1,6 @@
 import pygame
 import math
-from .effects import surf_circle, surf_rect
+from .effects import surf_circle, surf_rect, surf_polygon
 
 
 class ShapeParticles:
@@ -9,11 +9,12 @@ class ShapeParticles:
         self.gravity = gravity
         self.objects = []
 
-    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color, dis_amount: float):
+    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
+            dis_amount: float):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
         self.objects.append([loc, vel, size, color, dis_amount])
 
-    def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+    def use(self, surf: pygame.Surface, dt: float = 1.0, operation=lambda x, dt: x):
         if self.shape_type == "circle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
                 p[0][0] += p[1][0] * dt
@@ -77,7 +78,8 @@ class SparkParticles:
         self.gravity = gravity
         self.objects = []
 
-    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, scale: float, color: tuple | pygame.Color, dis_amount: float):
+    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, scale: float, color: tuple | pygame.Color,
+            dis_amount: float):
         self.objects.append(Spark(loc, angle, speed, color, scale, dis_amount))
 
     def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
@@ -85,6 +87,33 @@ class SparkParticles:
             s.move(dt, self.gravity)
             operation(s, dt)
             s.draw(surf)
+            if not s.alive:
+                self.objects.pop(i)
+
+    def use_with_light(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+        for i, s in sorted(enumerate(self.objects), reverse=True):
+            s.move(dt, self.gravity)
+            operation(s, dt)
+            s.draw(surf)
+            scale = s.scale * 3
+            points = [
+                [s.loc[0] + math.cos(s.angle) * s.speed * scale,
+                 s.loc[1] + math.sin(s.angle) * s.speed * scale],
+                [s.loc[0] + math.cos(s.angle + math.pi / 2) * s.speed * scale * 0.3,
+                 s.loc[1] + math.sin(s.angle + math.pi / 2) * s.speed * scale * 0.3],
+                [s.loc[0] - math.cos(s.angle) * s.speed * scale * 3.5,
+                 s.loc[1] - math.sin(s.angle) * s.speed * scale * 3.5],
+                [s.loc[0] + math.cos(s.angle - math.pi / 2) * s.speed * scale * 0.3,
+                 s.loc[1] - math.sin(s.angle + math.pi / 2) * s.speed * scale * 0.3],
+            ]
+            light_surf, new_points = surf_polygon(points, (s.color[0] / 3, s.color[1] / 3, s.color[2] / 3), True)
+
+            new_loc = [
+                new_points[0][0] - math.cos(s.angle) * s.speed * scale,
+                new_points[0][1] - math.sin(s.angle) * s.speed * scale
+            ]
+
+            surf.blit(light_surf, (s.loc[0] - new_loc[0], s.loc[1] - new_loc[1]), special_flags=pygame.BLEND_RGB_ADD)
             if not s.alive:
                 self.objects.pop(i)
 
@@ -96,7 +125,8 @@ class ImgParticles:
         self.gravity = gravity
         self.objects = []
 
-    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color, dis_amount: float):
+    def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
+            dis_amount: float):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
         self.objects.append([loc, vel, size, color, dis_amount])
 
@@ -107,13 +137,14 @@ class ImgParticles:
             p[2] -= p[4] * dt
             p[1][1] += self.gravity * dt
             operation(p, dt)
-            surf.blit(pygame.transform.scale(self.img, (p[2], p[2])), (p[0][0]-p[2]/2, p[0][1]-p[2]/2))
+            surf.blit(pygame.transform.scale(self.img, (p[2], p[2])), (p[0][0] - p[2] / 2, p[0][1] - p[2] / 2))
             if p[2] <= 0:
                 self.objects.pop(i)
 
 
 class Spark:
-    def __init__(self, loc: list | tuple | pygame.Vector2, angle: float, speed: float, color: tuple = (255, 255, 255), scale: float = 1,
+    def __init__(self, loc: list | tuple | pygame.Vector2, angle: float, speed: float, color: tuple = (255, 255, 255),
+                 scale: float = 1,
                  dis_amount: float = 0.25):
         self.loc = loc
         self.angle = angle
@@ -136,7 +167,8 @@ class Spark:
         movement = self.calculate_movement(dt)
         self.loc[0] += movement[0]
         self.loc[1] += movement[1]
-        self.velocity_adjust(0.975, gravity, 8, dt)
+        if gravity > 0:
+            self.velocity_adjust(0.975, gravity, 8, dt)
 
         self.speed -= self.dis_amount * dt
 
