@@ -80,7 +80,7 @@ class SparkParticles:
 
     def add(self, loc: list | pygame.Vector2, angle: float, speed: float, scale: float, color: tuple | pygame.Color,
             dis_amount: float):
-        self.objects.append(Spark(loc, angle, speed, color, scale, dis_amount))
+        self.objects.append(Spark(loc, math.radians(angle), speed, color, scale, dis_amount))
 
     def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
         for i, s in sorted(enumerate(self.objects), reverse=True):
@@ -126,9 +126,9 @@ class ImgParticles:
         self.objects = []
 
     def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
-            dis_amount: float):
+            dis_amount: float, rot_amount_deg: float = 0.0):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
-        self.objects.append([loc, vel, size, color, dis_amount])
+        self.objects.append([loc, vel, size, color, dis_amount, 0,rot_amount_deg])
 
     def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
         for i, p in sorted(enumerate(self.objects), reverse=True):
@@ -137,7 +137,13 @@ class ImgParticles:
             p[2] -= p[4] * dt
             p[1][1] += self.gravity * dt
             operation(p, dt)
-            surf.blit(pygame.transform.scale(self.img, (p[2], p[2])), (p[0][0] - p[2] / 2, p[0][1] - p[2] / 2))
+            p_img = pygame.transform.scale(self.img, (p[2], p[2]))
+            if p[6] > 0:
+                p[5] += p[6]
+                p_img_rot = pygame.transform.rotate(p_img, p[5])
+                surf.blit(p_img_rot, (p[0][0]-int(p_img_rot.get_width()/2)+p[2] / 2, p[0][1]-int(p_img_rot.get_height()/2)+p[2] / 2))
+            else:
+                surf.blit(p_img, (p[0][0] - p[2] / 2, p[0][1] - p[2] / 2))
             if p[2] <= 0:
                 self.objects.pop(i)
 
