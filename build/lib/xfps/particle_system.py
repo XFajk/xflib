@@ -33,7 +33,7 @@ class ShapeParticles:
                 p[2] -= p[4] * dt
                 p[1][1] += self.gravity * dt
                 operation(p, dt)
-                pygame.draw.rect(surf, p[3], (p[0][0], p[0][1], p[2], p[2]))
+                pygame.draw.rect(surf, p[3], (p[0][0]-p[2]/2, p[0][1]-p[2]/2, p[2], p[2]))
                 if p[2] <= 0:
                     self.objects.pop(i)
         else:
@@ -64,9 +64,9 @@ class ShapeParticles:
                 operation(p, dt)
                 light_surf = surf_rect(p[2] * 2, p[2] * 2, (p[3][0] / 3, p[3][1] / 3, p[3][2] / 3))
                 surf.blit(light_surf,
-                          (p[0][0] - int(light_surf.get_width() / 4), p[0][1] - int(light_surf.get_height() / 4)),
+                          (p[0][0] - int(light_surf.get_width() / 4)-p[2]/2, p[0][1] - int(light_surf.get_height() / 4)-p[2]/2),
                           special_flags=pygame.BLEND_RGB_ADD)
-                pygame.draw.rect(surf, p[3], (p[0][0], p[0][1], p[2], p[2]))
+                pygame.draw.rect(surf, p[3], (p[0][0]-p[2]/2, p[0][1]-p[2]/2, p[2], p[2]))
                 if p[2] <= 0:
                     self.objects.pop(i)
         else:
@@ -128,7 +128,7 @@ class ImgParticles:
     def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
             dis_amount: float, rot_amount_deg: float = 0.0):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
-        self.objects.append([loc, vel, size, color, dis_amount, 0,rot_amount_deg])
+        self.objects.append([loc, vel, size, color, dis_amount, 0, rot_amount_deg])
 
     def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
         for i, p in sorted(enumerate(self.objects), reverse=True):
@@ -141,7 +141,8 @@ class ImgParticles:
             if p[6] > 0:
                 p[5] += p[6]
                 p_img_rot = pygame.transform.rotate(p_img, p[5])
-                surf.blit(p_img_rot, (p[0][0]-int(p_img_rot.get_width()/2)+p[2] / 2, p[0][1]-int(p_img_rot.get_height()/2)+p[2] / 2))
+                surf.blit(p_img_rot, (p[0][0] - int(p_img_rot.get_width() / 2) + p[2] / 2,
+                                      p[0][1] - int(p_img_rot.get_height() / 2) + p[2] / 2))
             else:
                 surf.blit(p_img, (p[0][0] - p[2] / 2, p[0][1] - p[2] / 2))
             if p[2] <= 0:

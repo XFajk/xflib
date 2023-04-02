@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xfps',
-    version='0.1.7',
+    version='0.1.8',
     description='A particle system and effects library for Pygame',
     author='XFajk',
     author_email='ertyperty24@gmail.com',

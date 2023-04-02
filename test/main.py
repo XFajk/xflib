@@ -1,4 +1,4 @@
-import xfps
+from build.lib.xfps import *
 import pygame
 import time
 import random as rnd
@@ -6,7 +6,7 @@ import random as rnd
 def main():
     pygame.init()
 
-    ZOOM = 1.5
+    ZOOM = 1
     WS = (800, 600)
     DS = (WS[0] / ZOOM, WS[1] / ZOOM)
     window = pygame.display.set_mode(WS)
@@ -16,7 +16,7 @@ def main():
     # fonts
 
     # entities
-    particles = xfps.ShapeParticles("circle", 0.05)
+    particles = ShapeParticles("rectangle", 0.1)
 
     # timer
     last_time = time.time()
@@ -32,13 +32,15 @@ def main():
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
 
         # logic
-        particles.add(pygame.Vector2(250, 175), rnd.randint(-135, -45), rnd.randint(1, 5) / 2, 5,
-                      (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.05)
+        particles.add(pygame.Vector2(400, 300), rnd.randint(-135, -45), rnd.randint(1, 5) / 2, 64,
+                      (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.5)
 
         # drawing
         display.fill((0, 0, 0))
 
         particles.use_with_light(display, dt)
+
+        pygame.draw.circle(display, (255, 0, 0), (400, 300), 2)
 
         pygame.display.update()
 
