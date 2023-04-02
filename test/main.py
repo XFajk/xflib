@@ -1,8 +1,7 @@
-from build.lib.xfps import *
+import xfps
 import pygame
 import time
 import random as rnd
-
 
 def main():
     pygame.init()
@@ -17,10 +16,7 @@ def main():
     # fonts
 
     # entities
-    particles = ShapeParticles("circle", 0.05)
-    surf = pygame.Surface((32, 32))
-    surf.fill((255, 255, 255))
-    images = ImgParticles(surf)
+    particles = xfps.ShapeParticles("circle", 0.05)
 
     # timer
     last_time = time.time()
@@ -38,14 +34,11 @@ def main():
         # logic
         particles.add(pygame.Vector2(250, 175), rnd.randint(-135, -45), rnd.randint(1, 5) / 2, 5,
                       (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.05)
-        images.add(pygame.Vector2(250, 175), rnd.randint(-135, -45), rnd.randint(1, 5) / 2, 32,
-                   (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.05, 1)
 
         # drawing
         display.fill((0, 0, 0))
 
-        #particles.use_with_light(display, dt)
-        images.use(display, dt)
+        particles.use_with_light(display, dt)
 
         pygame.display.update()
 
