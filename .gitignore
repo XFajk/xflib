@@ -1,3 +1,5 @@
 dist/
 xfps.egg-info/
 test/
+src/xflib.egg-info
+build/
