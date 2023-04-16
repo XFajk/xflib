@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: xflib
+Version: 0.1.10
+Summary: A particle system, effects and UI library for Pygame
+Home-page: https://github.com/XFajk/xflib/tree/main
+Author: XFajk
+Author-email: ertyperty24@gmail.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.11
+License-File: LICENSE

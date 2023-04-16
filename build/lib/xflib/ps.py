@@ -1,6 +1,6 @@
 import pygame
 import math
-from .effects import surf_circle, surf_rect, surf_polygon
+from .utils import surf_circle, surf_rect, surf_polygon
 
 
 class ShapeParticles:
@@ -12,65 +12,73 @@ class ShapeParticles:
     def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
             dis_amount: float):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
-        self.objects.append([loc, vel, size, color, dis_amount])
+        self.objects.append(
+            {
+                "loc": loc,
+                "vel": vel,
+                "size": size,
+                "color": color,
+                "dis_amount": dis_amount,
+            }
+        )
 
     def use(self, surf: pygame.Surface, dt: float = 1.0, operation=lambda x, dt: x):
         if self.shape_type == "circle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
-                p[0][0] += p[1][0] * dt
-                p[0][1] += p[1][1] * dt
-                p[2] -= p[4] * dt
-                p[1][1] += self.gravity * dt
+                p["loc"][0] += p["vel"][0] * dt
+                p["loc"][1] += p["vel"][1] * dt
+                p["size"] -= p["dis_amount"] * dt
+                p["vel"][1] += self.gravity * dt
                 operation(p, dt)
-                pygame.draw.circle(surf, p[3], p[0], p[2])
-                if p[2] <= 0:
+                pygame.draw.circle(surf, p["color"], p["loc"], p["size"])
+                if p["size"] <= 0:
                     self.objects.pop(i)
 
         elif self.shape_type == "rectangle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
-                p[0][0] += p[1][0] * dt
-                p[0][1] += p[1][1] * dt
-                p[2] -= p[4] * dt
-                p[1][1] += self.gravity * dt
+                p["loc"][0] += p["vel"][0] * dt
+                p["loc"][1] += p["vel"][1] * dt
+                p["size"] -= p["dis_amount"] * dt
+                p["vel"][1] += self.gravity * dt
                 operation(p, dt)
-                pygame.draw.rect(surf, p[3], (p[0][0]-p[2]/2, p[0][1]-p[2]/2, p[2], p[2]))
-                if p[2] <= 0:
+                pygame.draw.rect(surf, p["color"], (p["loc"][0]-p["size"]/2, p["loc"][1]-p["size"]/2, p["size"], p["size"]))
+                if p["size"] <= 0:
                     self.objects.pop(i)
         else:
-            raise TypeError(f"{self.shape_type} is an invalid shape type")
+            raise TypeError(f"{self.shape_type} is an invalid shape type you can use circle or rectangle")
 
     def use_with_light(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
         if self.shape_type == "circle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
-                p[0][0] += p[1][0] * dt
-                p[0][1] += p[1][1] * dt
-                p[2] -= p[4] * dt
-                p[1][1] += self.gravity * dt
+                p["loc"][0] += p["vel"][0] * dt
+                p["loc"][1] += p["vel"][1] * dt
+                p["size"] -= p["dis_amount"] * dt
+                p["vel"][1] += self.gravity * dt
                 operation(p, dt)
-                light_surf = surf_circle(p[2] * 2, (p[3][0] / 3, p[3][1] / 3, p[3][2] / 3))
+                light_surf = surf_circle(p["size"] * 2, (p["color"][0] / 3, p["color"][1] / 3, p["color"][2] / 3))
                 surf.blit(light_surf,
-                          (p[0][0] - int(light_surf.get_width() / 2), p[0][1] - int(light_surf.get_height() / 2)),
+                          (p["loc"][0] - int(light_surf.get_width() / 2), p["loc"][1] - int(light_surf.get_height() / 2)),
                           special_flags=pygame.BLEND_RGB_ADD)
-                pygame.draw.circle(surf, p[3], p[0], p[2])
-                if p[2] <= 0:
+                pygame.draw.circle(surf, p["color"], p["loc"], p["size"])
+                if p["size"] <= 0:
                     self.objects.pop(i)
 
         elif self.shape_type == "rectangle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
-                p[0][0] += p[1][0] * dt
-                p[0][1] += p[1][1] * dt
-                p[2] -= p[4] * dt
-                p[1][1] += self.gravity * dt
+                p["loc"][0] += p["vel"][0] * dt
+                p["loc"][1] += p["vel"][1] * dt
+                p["size"] -= p["dis_amount"] * dt
+                p["vel"][1] += self.gravity * dt
                 operation(p, dt)
-                light_surf = surf_rect(p[2] * 2, p[2] * 2, (p[3][0] / 3, p[3][1] / 3, p[3][2] / 3))
+                light_surf = surf_rect(p["size"] * 2, p["size"] * 2, (p["color"][0] / 3, p["color"][1] / 3, p["color"][2] / 3))
                 surf.blit(light_surf,
-                          (p[0][0] - int(light_surf.get_width() / 4)-p[2]/2, p[0][1] - int(light_surf.get_height() / 4)-p[2]/2),
+                          (p["loc"][0] - int(light_surf.get_width() / 4)-p["size"]/2, p["loc"][1] - int(light_surf.get_height() / 4)-p["size"]/2),
                           special_flags=pygame.BLEND_RGB_ADD)
-                pygame.draw.rect(surf, p[3], (p[0][0]-p[2]/2, p[0][1]-p[2]/2, p[2], p[2]))
-                if p[2] <= 0:
+                pygame.draw.rect(surf, p["color"], (p["loc"][0]-p["size"]/2, p["loc"][1]-p["size"]/2, p["size"], p["size"]))
+                if p["size"] <= 0:
                     self.objects.pop(i)
         else:
-            raise TypeError(f"{self.shape_type} is an invalid shape type")
+            raise TypeError(f"{self.shape_type} is an invalid shape type you can use circle or rectangle")
 
 
 class SparkParticles:
@@ -119,33 +127,44 @@ class SparkParticles:
 
 
 class ImgParticles:
-    def __init__(self, img: pygame.Surface, gravity: float = 0.0, color_key: tuple | pygame.Color = (0, 0, 0)):
+    def __init__(self, img: pygame.Surface, gravity: float = 0.0, give_color_key: bool = False, color_key: tuple | pygame.Color = (0, 0, 0)):
         self.img = img
-        self.img.set_colorkey(color_key)
+        if give_color_key:
+            self.img.set_colorkey(color_key)
         self.gravity = gravity
         self.objects = []
 
     def add(self, loc: list | pygame.Vector2, angle: float, speed: float, size: float, color: tuple | pygame.Color,
             dis_amount: float, rot_amount_deg: float = 0.0):
         vel = [math.cos(math.radians(angle)) * speed, math.sin(math.radians(angle)) * speed]
-        self.objects.append([loc, vel, size, color, dis_amount, 0, rot_amount_deg])
+        self.objects.append(
+            {
+                "loc": loc,
+                "vel": vel,
+                "size": size,
+                "color": color,
+                "dis_amount": dis_amount,
+                "rot_amount_deg": rot_amount_deg,
+                "rotation": 0
+            }
+        )
 
     def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
         for i, p in sorted(enumerate(self.objects), reverse=True):
-            p[0][0] += p[1][0] * dt
-            p[0][1] += p[1][1] * dt
-            p[2] -= p[4] * dt
-            p[1][1] += self.gravity * dt
+            p["loc"][0] += p["vel"][0] * dt
+            p["loc"][1] += p["vel"][1] * dt
+            p["size"] -= p["dis_amount"] * dt
+            p["vel"][1] += self.gravity * dt
             operation(p, dt)
-            p_img = pygame.transform.scale(self.img, (p[2], p[2]))
-            if p[6] > 0:
-                p[5] += p[6]
-                p_img_rot = pygame.transform.rotate(p_img, p[5])
-                surf.blit(p_img_rot, (p[0][0] - int(p_img_rot.get_width() / 2) + p[2] / 2,
-                                      p[0][1] - int(p_img_rot.get_height() / 2) + p[2] / 2))
+            p_img = pygame.transform.scale(self.img, (p["size"], p["size"]))
+            if p["rot_amount_deg"] > 0:
+                p["rotation"] += p["rot_amount_deg"]
+                p_img_rot = pygame.transform.rotate(p_img, p["rotation"])
+                surf.blit(p_img_rot, (p["loc"][0] - int(p_img_rot.get_width() / 2) + p["size"] / 2,
+                                      p["loc"][1] - int(p_img_rot.get_height() / 2) + p["size"] / 2))
             else:
-                surf.blit(p_img, (p[0][0] - p[2] / 2, p[0][1] - p[2] / 2))
-            if p[2] <= 0:
+                surf.blit(p_img, (p["loc"][0] - p["size"] / 2, p["loc"][1] - p["size"] / 2))
+            if p["size"] <= 0:
                 self.objects.pop(i)
 
 

@@ -1,12 +1,12 @@
-import xfps
+import xflib
 import pygame
 import time
 import random as rnd
 
 """
  this file shows a demonstration
- of how easy it is to use the xfps library width pygame 
- to run this file you need to have pygame and xfps installed with pip
+ of how easy it is to use the xflib library width pygame 
+ to run this file you need to have pygame and xflib installed with pip
 """
 
 

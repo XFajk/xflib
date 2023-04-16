@@ -1,7 +1,8 @@
-from build.lib.xfps import *
+from build.lib.xflib import *
 import pygame
 import time
 import random as rnd
+
 
 def main():
     pygame.init()
@@ -16,7 +17,7 @@ def main():
     # fonts
 
     # entities
-    particles = ShapeParticles("rectangle", 0.1)
+    particles = ImgParticles(pygame.image.load("test/smile.png").convert(), 0.1, False)
 
     # timer
     last_time = time.time()
@@ -32,13 +33,16 @@ def main():
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
 
         # logic
-        particles.add(pygame.Vector2(400, 300), rnd.randint(-135, -45), rnd.randint(1, 5) / 2, 64,
-                      (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.5)
+        for i in range(1):
+            particles.add(pygame.Vector2(400, 300), rnd.randint(-135, -45), rnd.randint(1, 10) / 2, 32,
+                          (rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)), 0.25, 0.1)
+
+        print(len(particles.objects))
 
         # drawing
         display.fill((0, 0, 0))
 
-        particles.use_with_light(display, dt)
+        particles.use(display, dt)
 
         pygame.draw.circle(display, (255, 0, 0), (400, 300), 2)
 

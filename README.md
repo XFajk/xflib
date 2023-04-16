@@ -1,6 +1,6 @@
-# XFPS
+# XFLIB
 
-<p>A particle system and effects library for Pygame</p>
+<p>A particle system, ui and game dev util library</p>
 
-[documetation of the xfps library](https://github.com/XFajk/xfps/wiki)
+[documentation of the xflib library](https://github.com/XFajk/xflib/wiki)
 
