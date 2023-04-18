@@ -4,13 +4,17 @@ import time
 import random as rnd
 
 
+def change_color(dt, args):
+    return rnd.randint(100, 255), rnd.randint(100, 255), rnd.randint(100, 255)
+
+
 def main():
     pygame.init()
 
     ZOOM = 1
     WS = (800, 600)
     DS = (WS[0] / ZOOM, WS[1] / ZOOM)
-    window = pygame.display.set_mode(WS)
+    window = pygame.display.set_mode(WS, vsync=1)
     display = pygame.Surface(DS)
     clock = pygame.time.Clock()
 
@@ -19,10 +23,14 @@ def main():
     # entities
     button = xflib.ui.Button(
         [DS[0] / 2, DS[1] / 2], "Hello world!", pygame.font.Font(None, 32),
-        (255, 0, 0), (0, 0, 0), (255, 255, 255),
+        (255, 0, 0), (255, 255, 255),
         True
     )
     button.flags["shadow"] = xflib.construct_shadow_flag(True, 3)
+    button.flags["expand"] = xflib.construct_expand_flag(True, 1)
+    button.flags["change_color"] = xflib.construct_change_color_flag(True, (255, 0, 0), (100, 0, 0))
+
+    background_color = (255, 255, 0)
 
     # timer
     last_time = time.time()
@@ -34,13 +42,16 @@ def main():
         dt *= 60
         last_time = time.time()
 
-        keys = pygame.key.get_pressed()
+        mouse_input = pygame.mouse.get_pressed()
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
 
         # logic
+        button.update(dt, (int(mouse_pos.x), int(mouse_pos.y)), mouse_input[0], (0,), change_color)
+        if button.result is not None:
+            background_color = button.result
 
         # drawing
-        display.fill((255, 255, 0))
+        display.fill(background_color)
 
         button.draw(display)
 

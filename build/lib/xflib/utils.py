@@ -45,7 +45,8 @@ def surf_polygon(points: list[list], color: tuple | pygame.Color,
         return surf
 
 
-def move_to(pos_a: tuple[float, float] | list[float, float] | pygame.Vector2, pos_b: tuple[float, float] | list[float, float] | pygame.Vector2, speed: float) -> list[float, float]:
+def move_to(pos_a: tuple[float, float] | list[float, float] | pygame.Vector2,
+            pos_b: tuple[float, float] | list[float, float] | pygame.Vector2, speed: float) -> list[float, float]:
     start = [pos_a[0], pos_a[1]]
     end = [pos_b[0], pos_b[1]]
 
@@ -55,19 +56,19 @@ def move_to(pos_a: tuple[float, float] | list[float, float] | pygame.Vector2, po
     return start
 
 
-def get_sprite(sprite_sheet: pygame.Surface, tile_w: int, tile_h: int, tile_x: int, tile_y: int):
+def get_sprite(sprite_sheet: pygame.Surface, spr_w: int, spr_h: int, spr_x: int, spr_y: int):
     tile = pygame.transform.chop(sprite_sheet, (
-        int(tile_x + 1) * tile_w,
-        int(tile_y + 1) * tile_h,
-        sprite_sheet.get_width() - tile_w,
-        sprite_sheet.get_height() - tile_h
+        int(spr_x + 1) * spr_w,
+        int(spr_y + 1) * spr_h,
+        sprite_sheet.get_width() - spr_w,
+        sprite_sheet.get_height() - spr_h
     ))
 
     tile = pygame.transform.chop(tile, (
         -1,
         -1,
-        1+tile_w + (tile.get_width()-(tile.get_width()-(tile_x-1)*8)),
-        1+tile_h + (tile.get_height()-(tile.get_height()-(tile_y-1)*8))
+        1 + spr_w + (tile.get_width() - (tile.get_width() - (spr_x - 1) * 8)),
+        1 + spr_h + (tile.get_height() - (tile.get_height() - (spr_y - 1) * 8))
     ))
 
     return tile
