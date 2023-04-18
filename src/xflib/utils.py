@@ -16,7 +16,8 @@ def surf_rect(w: float, h: float, color: tuple | pygame.Color) -> pygame.Surface
     return surf
 
 
-def surf_polygon(points: list[list], color: tuple | pygame.Color, return_points: bool = False) -> pygame.Surface | tuple:
+def surf_polygon(points: list[list], color: tuple | pygame.Color,
+                 return_points: bool = False) -> pygame.Surface | tuple:
     smallest_position_x = min(row[0] for row in points)
     smallest_position_y = min(row[1] for row in points)
 
@@ -42,3 +43,30 @@ def surf_polygon(points: list[list], color: tuple | pygame.Color, return_points:
         return surf, points
     else:
         return surf
+
+
+def move_to(pos_a: tuple[float, float] | list[float, float] | pygame.Vector2, pos_b: tuple[float, float] | list[float, float] | pygame.Vector2, speed: float) -> list[float, float]:
+    start = [pos_a[0], pos_a[1]]
+    end = [pos_b[0], pos_b[1]]
+
+    start[0] += (start[0] - end[0]) / speed
+    start[1] += (start[0] - end[0]) / speed
+
+    return start
+
+def get_sprite(sprite_sheet: pygame.Surface, tile_w: int, tile_h: int, tile_x: int, tile_y: int):
+    tile = pygame.transform.chop(sprite_sheet, (
+        int(tile_x + 1) * tile_w,
+        int(tile_y + 1) * tile_h,
+        sprite_sheet.get_width() - tile_w,
+        sprite_sheet.get_height() - tile_h
+    ))
+
+    tile = pygame.transform.chop(tile, (
+        -1,
+        -1,
+        1+tile_w + (tile.get_width()-(tile.get_width()-(tile_x-1)*8)),
+        1+tile_h + (tile.get_height()-(tile.get_height()-(tile_y-1)*8))
+    ))
+
+    return tile
