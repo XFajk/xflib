@@ -50,6 +50,9 @@ def main():
         if button.result is not None:
             background_color = button.result
 
+        if button.pressed:
+            button.rerender_text(str(rnd.randbytes(10)), (255, 255, 255), True)
+
         # drawing
         display.fill(background_color)
 

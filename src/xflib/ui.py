@@ -36,8 +36,9 @@ class Button:
         self.rect = pygame.Rect(self.position.x, self.position.y, self.rendered_text.get_width() + 10,
                                 self.rendered_text.get_height() + 10)
         self.normal_wh = (self.rect.w, self.rect.h)
-        self.expanded_wh = (self.rect.w+10, self.rect.h+10)
+        self.expanded_wh = (self.rect.w + 10, self.rect.h + 10)
         self.color = color
+        self.text_color = text_color
         self.flags = {
             "expand": construct_expand_flag(False),
             "change_color": construct_change_color_flag(False),
@@ -72,9 +73,9 @@ class Button:
 
             if self.flags["expand"]["add_expand"]:
                 if self.rect.w < self.expanded_wh[0]:
-                    self.rect.w += self.flags["expand"]["expand_speed"]*dt
+                    self.rect.w += self.flags["expand"]["expand_speed"] * dt
                 if self.rect.h < self.expanded_wh[1]:
-                    self.rect.h += self.flags["expand"]["expand_speed"]*dt
+                    self.rect.h += self.flags["expand"]["expand_speed"] * dt
 
             if click_input and not self.pressed:
                 self.pressed = True
@@ -85,12 +86,41 @@ class Button:
 
             if self.flags["expand"]["add_expand"]:
                 if self.rect.w > self.normal_wh[0]:
-                    self.rect.w -= self.flags["expand"]["expand_speed"]*dt
+                    self.rect.w -= self.flags["expand"]["expand_speed"] * dt
                 if self.rect.h > self.normal_wh[1]:
-                    self.rect.h -= self.flags["expand"]["expand_speed"]*dt
+                    self.rect.h -= self.flags["expand"]["expand_speed"] * dt
 
         if not click_input and self.pressed:
             self.pressed = False
+
+    def rerender_text(self, text: str, text_color: tuple[int, int, int] | list[int, int, int], antialias: bool):
+        self.rendered_text = self.font.render(text, antialias, text_color)
+        self.rect = pygame.Rect(self.position.x, self.position.y, self.rendered_text.get_width() + 10,
+                                self.rendered_text.get_height() + 10)
+        self.normal_wh = (self.rect.w, self.rect.h)
+        self.expanded_wh = (self.rect.w + 10, self.rect.h + 10)
+        self.text = text
+
+
+class Slider:
+    def __init__(self, position: list[float], value: int | float, font: pygame.font.Font,
+                 color: tuple[int, int, int] | list[int, int, int],
+                 text_color: tuple[int, int, int] | list[int, int, int], antialias: bool):
+        self.left_button = Button([position[0], position[1]], "<", font, color, text_color, antialias)
+        self.right_button = Button([position[0], position[1]], ">", font, color, text_color, antialias)
+
+        self.font = font
+        self.rendered_text = self.font.render(f"{value}", antialias, text_color)
+        self.color = color
+        self.text_color = text_color
+
+        self.value = value
+
+    def draw(self):
+        ...
+
+    def update(self):
+        ...
 
 
 class TextArea:
