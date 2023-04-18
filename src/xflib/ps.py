@@ -1,5 +1,6 @@
 import pygame
 import math
+from typing import Callable
 from .utils import surf_circle, surf_rect, surf_polygon
 
 
@@ -22,7 +23,7 @@ class ShapeParticles:
             }
         )
 
-    def use(self, surf: pygame.Surface, dt: float = 1.0, operation=lambda x, dt: x):
+    def use(self, surf: pygame.Surface, dt: float, operation: Callable[[dict, float], any]):
         if self.shape_type == "circle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
                 p["loc"][0] += p["vel"][0] * dt
@@ -47,7 +48,7 @@ class ShapeParticles:
         else:
             raise TypeError(f"{self.shape_type} is an invalid shape type you can use circle or rectangle")
 
-    def use_with_light(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+    def use_with_light(self, surf: pygame.Surface, dt: float, operation: Callable[[dict, float], any]):
         if self.shape_type == "circle":
             for i, p in sorted(enumerate(self.objects), reverse=True):
                 p["loc"][0] += p["vel"][0] * dt
@@ -90,7 +91,7 @@ class SparkParticles:
             dis_amount: float):
         self.objects.append(Spark(loc, math.radians(angle), speed, color, scale, dis_amount))
 
-    def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+    def use(self, surf: pygame.Surface, dt: float, operation: Callable[[dict, float], any]):
         for i, s in sorted(enumerate(self.objects), reverse=True):
             s.move(dt, self.gravity)
             operation(s, dt)
@@ -98,7 +99,7 @@ class SparkParticles:
             if not s.alive:
                 self.objects.pop(i)
 
-    def use_with_light(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+    def use_with_light(self, surf: pygame.Surface, dt: float, operation: Callable[[dict, float], any]):
         for i, s in sorted(enumerate(self.objects), reverse=True):
             s.move(dt, self.gravity)
             operation(s, dt)
@@ -149,7 +150,7 @@ class ImgParticles:
             }
         )
 
-    def use(self, surf: pygame.Surface, dt: float, operation=lambda x, dt: x):
+    def use(self, surf: pygame.Surface, dt: float, operation: Callable[[dict, float], any]):
         for i, p in sorted(enumerate(self.objects), reverse=True):
             p["loc"][0] += p["vel"][0] * dt
             p["loc"][1] += p["vel"][1] * dt

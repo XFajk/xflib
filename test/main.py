@@ -30,6 +30,15 @@ def main():
     button.flags["expand"] = xflib.construct_expand_flag(True, 1)
     button.flags["change_color"] = xflib.construct_change_color_flag(True, (255, 0, 0), (100, 0, 0))
 
+    slider = xflib.ui.Slider(
+        [DS[0] / 2, DS[1] / 2+100], 10, pygame.font.Font(None, 32),
+        (255, 0, 0), (0, 0, 0), (255, 255, 255),
+        True
+    )
+    slider.flags["shadow"] = xflib.construct_shadow_flag(True, 3)
+    slider.flags["expand"] = xflib.construct_expand_flag(True, 1)
+    slider.flags["change_color"] = xflib.construct_change_color_flag(True, (255, 0, 0), (100, 0, 0))
+
     background_color = (255, 255, 0)
 
     # timer
@@ -53,10 +62,13 @@ def main():
         if button.pressed:
             button.rerender_text(str(rnd.randbytes(10)), (255, 255, 255), True)
 
+        slider.update(dt, (int(mouse_pos.x), int(mouse_pos.y)), mouse_input[0], (slider.value, 0.1), slider.default_left_operation, (slider.value, 0.1), slider.default_right_operation)
+
         # drawing
         display.fill(background_color)
 
         button.draw(display)
+        slider.draw(display)
 
         pygame.display.update()
 

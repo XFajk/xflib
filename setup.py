@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xflib',
-    version='0.1.10',
+    version='0.1.11',
     description='A particle system, effects and UI library for Pygame',
     author='XFajk',
     author_email='ertyperty24@gmail.com',
